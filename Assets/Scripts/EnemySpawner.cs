@@ -13,6 +13,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float enemiesPerSecond = 0.5f;
     [SerializeField] private float timeBetweenWaves = 5f;
     [SerializeField] private float difficultyScalingFactor = 0.75f;
+    [SerializeField] private int maxWaves = 10; 
 
     [Header("Events")]
     public static UnityEvent onEnemyDestroy = new UnityEvent();
@@ -28,6 +29,12 @@ public class EnemySpawner : MonoBehaviour
         onEnemyDestroy.AddListener(EnemyDestroyed);
     }
 
+    private void OnDestroy()
+    {
+        
+        onEnemyDestroy.RemoveListener(EnemyDestroyed);
+    }
+
     private void Start()
     {
         StartCoroutine(StartWave());
@@ -39,13 +46,15 @@ public class EnemySpawner : MonoBehaviour
 
         timeSinceLastSpawn += Time.deltaTime;
 
+        
         if (timeSinceLastSpawn >= (1f / enemiesPerSecond) && enemiesLeftToSpawn > 0)
         {
             SpawnEnemy();
             timeSinceLastSpawn = 0f;
         }
 
-        if (enemiesAlive == 0 && enemiesLeftToSpawn == 0)
+        
+        if (enemiesAlive <= 0 && enemiesLeftToSpawn <= 0)
         {
             EndWave();
         }
@@ -63,14 +72,26 @@ public class EnemySpawner : MonoBehaviour
     {
         isSpawning = false;
         timeSinceLastSpawn = 0f;
+
+       
+        if (currentWave >= maxWaves)
+        {
+            LevelCompleted();
+            return;
+        }
+
         currentWave++;
         StartCoroutine(StartWave());
     }
 
     private void SpawnEnemy()
     {
-        GameObject prefabToSpawn = enemyPrefabs[0];
+       
+        int index = Random.Range(0, enemyPrefabs.Length);
+        GameObject prefabToSpawn = enemyPrefabs[index];
+
         Instantiate(prefabToSpawn, LevelManager.main.startPoint.position, Quaternion.identity);
+
         enemiesLeftToSpawn--;
         enemiesAlive++;
     }
@@ -82,6 +103,13 @@ public class EnemySpawner : MonoBehaviour
 
     private int EnemiesPerWave()
     {
+        
         return Mathf.RoundToInt(baseEnemies * Mathf.Pow(currentWave, difficultyScalingFactor));
+    }
+
+    private void LevelCompleted()
+    {
+        Debug.Log("LEVEL CLEARED! You survived all " + maxWaves + " waves.");
+       
     }
 }

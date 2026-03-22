@@ -636,8 +636,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: -468.86}
-  m_SizeDelta: {x: 300, y: 937.78}
+  m_AnchoredPosition: {x: 144.59, y: -665.76}
+  m_SizeDelta: {x: 300, y: 1331.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &176360026
 MonoBehaviour:
@@ -2042,8 +2042,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -17.941}
-  m_SizeDelta: {x: 300, y: 802.67}
+  m_AnchoredPosition: {x: -0.000030436, y: -42.747}
+  m_SizeDelta: {x: 300, y: 1246.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &514700678
 MonoBehaviour:
@@ -2315,6 +2315,7 @@ MonoBehaviour:
   enemiesPerSecond: 0.5
   timeBetweenWaves: 5
   difficultyScalingFactor: 0.75
+  maxWaves: 10
 --- !u!114 &617415615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7542,7 +7543,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.842361
+  orthographic size: 6.4355993
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
