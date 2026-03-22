@@ -11,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - SolidObjects
+  - Enemy
+  - Bullet
   - 
   - 
   - 
@@ -50,3 +50,6 @@ TagManager:
   - name: Player
     uniqueID: 1909961439
     locked: 1
+  - name: Turrets
+    uniqueID: 674977505
+    locked: 0
