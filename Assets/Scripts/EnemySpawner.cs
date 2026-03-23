@@ -13,6 +13,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float enemiesPerSecond = 0.5f;
     [SerializeField] private float timeBetweenWaves = 5f;
     [SerializeField] private float difficultyScalingFactor = 0.75f;
+    [SerializeField] private int maxWaves = 5; // 1. Added a limit for your STEM project ending
 
     [Header("Events")]
     public static UnityEvent onEnemyDestroy = new UnityEvent();
@@ -25,6 +26,8 @@ public class EnemySpawner : MonoBehaviour
 
     private void Awake()
     {
+        // Clean up the listener first to prevent "ghost" double-counting
+        onEnemyDestroy.RemoveListener(EnemyDestroyed);
         onEnemyDestroy.AddListener(EnemyDestroyed);
     }
 
@@ -39,13 +42,15 @@ public class EnemySpawner : MonoBehaviour
 
         timeSinceLastSpawn += Time.deltaTime;
 
-        if (timeSinceLastSpawn >= (1f / enemiesPerSecond) && enemiesLeftToSpawn > 0)
+        // Spawn logic
+        if (enemiesLeftToSpawn > 0 && timeSinceLastSpawn >= (1f / enemiesPerSecond))
         {
             SpawnEnemy();
             timeSinceLastSpawn = 0f;
         }
 
-        if (enemiesAlive == 0 && enemiesLeftToSpawn == 0)
+        // 2. CHECK FOR WAVE END: All spawned AND all dead
+        if (enemiesLeftToSpawn == 0 && enemiesAlive <= 0)
         {
             EndWave();
         }
@@ -53,24 +58,37 @@ public class EnemySpawner : MonoBehaviour
 
     private IEnumerator StartWave()
     {
+        isSpawning = false; // Stay quiet during the countdown
         yield return new WaitForSeconds(timeBetweenWaves);
 
         enemiesLeftToSpawn = EnemiesPerWave();
+        enemiesAlive = 0; // Reset count for the new wave
         isSpawning = true;
     }
 
     private void EndWave()
     {
         isSpawning = false;
-        timeSinceLastSpawn = 0f;
+
+        // 3. Victory Condition
+        if (currentWave >= maxWaves)
+        {
+            WinGame();
+            return;
+        }
+
         currentWave++;
         StartCoroutine(StartWave());
     }
 
     private void SpawnEnemy()
     {
-        GameObject prefabToSpawn = enemyPrefabs[0];
+        // Randomize which virus prefab spawns for more variety!
+        int index = Random.Range(0, enemyPrefabs.Length);
+        GameObject prefabToSpawn = enemyPrefabs[index];
+
         Instantiate(prefabToSpawn, LevelManager.main.startPoint.position, Quaternion.identity);
+
         enemiesLeftToSpawn--;
         enemiesAlive++;
     }
@@ -78,6 +96,12 @@ public class EnemySpawner : MonoBehaviour
     private void EnemyDestroyed()
     {
         enemiesAlive--;
+    }
+
+    private void WinGame()
+    {
+        Debug.Log("LEVEL CLEAR: SYSTEM SECURE!");
+        // Would you like me to help you show a "Victory" UI screen here?
     }
 
     private int EnemiesPerWave()
