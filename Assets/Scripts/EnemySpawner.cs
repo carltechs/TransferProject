@@ -2,22 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro; // Added for your Wave Indicator
 
 public class EnemySpawner : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject[] enemyPrefabs;
+    [SerializeField] private TextMeshProUGUI waveText; // Link your UI Text here
 
     [Header("Attributes")]
     [SerializeField] private int baseEnemies = 8;
     [SerializeField] private float enemiesPerSecond = 0.5f;
     [SerializeField] private float timeBetweenWaves = 5f;
     [SerializeField] private float difficultyScalingFactor = 0.75f;
-<<<<<<< HEAD
-    [SerializeField] private int maxWaves = 5; // 1. Added a limit for your STEM project ending
-=======
-    [SerializeField] private int maxWaves = 10; 
->>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
+    [SerializeField] private int maxWaves = 10; // Kept bob-jc's 10 waves, but you can change to 5 in Inspector
 
     [Header("Events")]
     public static UnityEvent onEnemyDestroy = new UnityEvent();
@@ -30,14 +28,13 @@ public class EnemySpawner : MonoBehaviour
 
     private void Awake()
     {
-        // Clean up the listener first to prevent "ghost" double-counting
+        // Prevents double-counting if the scene reloads
         onEnemyDestroy.RemoveListener(EnemyDestroyed);
         onEnemyDestroy.AddListener(EnemyDestroyed);
     }
 
     private void OnDestroy()
     {
-        
         onEnemyDestroy.RemoveListener(EnemyDestroyed);
     }
 
@@ -48,61 +45,53 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
+        UpdateWaveUI(); // Keeps your indicator updated every frame
+
         if (!isSpawning) return;
 
         timeSinceLastSpawn += Time.deltaTime;
 
-<<<<<<< HEAD
-        // Spawn logic
+        // Spawn logic: Check timer and if we have enemies left
         if (enemiesLeftToSpawn > 0 && timeSinceLastSpawn >= (1f / enemiesPerSecond))
-=======
-        
-        if (timeSinceLastSpawn >= (1f / enemiesPerSecond) && enemiesLeftToSpawn > 0)
->>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
         {
             SpawnEnemy();
             timeSinceLastSpawn = 0f;
         }
 
-<<<<<<< HEAD
-        // 2. CHECK FOR WAVE END: All spawned AND all dead
+        // Check if wave is over
         if (enemiesLeftToSpawn == 0 && enemiesAlive <= 0)
-=======
-        
-        if (enemiesAlive <= 0 && enemiesLeftToSpawn <= 0)
->>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
         {
             EndWave();
         }
     }
 
+    private void UpdateWaveUI()
+    {
+        if (waveText != null)
+        {
+            waveText.text = "Wave: " + currentWave + " / " + maxWaves +
+                            "\nEnemies: " + (enemiesLeftToSpawn + enemiesAlive);
+        }
+    }
+
     private IEnumerator StartWave()
     {
-        isSpawning = false; // Stay quiet during the countdown
+        isSpawning = false;
         yield return new WaitForSeconds(timeBetweenWaves);
 
         enemiesLeftToSpawn = EnemiesPerWave();
-        enemiesAlive = 0; // Reset count for the new wave
+        enemiesAlive = 0;
         isSpawning = true;
     }
 
     private void EndWave()
     {
         isSpawning = false;
-<<<<<<< HEAD
-
-        // 3. Victory Condition
-        if (currentWave >= maxWaves)
-        {
-            WinGame();
-=======
         timeSinceLastSpawn = 0f;
 
-       
         if (currentWave >= maxWaves)
         {
             LevelCompleted();
->>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
             return;
         }
 
@@ -112,11 +101,6 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-<<<<<<< HEAD
-        // Randomize which virus prefab spawns for more variety!
-=======
-       
->>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
         int index = Random.Range(0, enemyPrefabs.Length);
         GameObject prefabToSpawn = enemyPrefabs[index];
 
@@ -131,21 +115,14 @@ public class EnemySpawner : MonoBehaviour
         enemiesAlive--;
     }
 
-    private void WinGame()
+    private void LevelCompleted()
     {
-        Debug.Log("LEVEL CLEAR: SYSTEM SECURE!");
-        // Would you like me to help you show a "Victory" UI screen here?
+        if (waveText != null) waveText.text = "SYSTEM SECURE!";
+        Debug.Log("LEVEL CLEARED! You survived all " + maxWaves + " waves.");
     }
 
     private int EnemiesPerWave()
     {
-        
         return Mathf.RoundToInt(baseEnemies * Mathf.Pow(currentWave, difficultyScalingFactor));
-    }
-
-    private void LevelCompleted()
-    {
-        Debug.Log("LEVEL CLEARED! You survived all " + maxWaves + " waves.");
-       
     }
 }
