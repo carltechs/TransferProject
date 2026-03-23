@@ -164,8 +164,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 724042549567114986}
+<<<<<<< HEAD
   anim: {fileID: 0}
   moveSpeed: 2
+=======
+  moveSpeed: 3
+>>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
 --- !u!114 &125349537327902813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,6 +184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitPoints: 2
   currencyWorth: 50
+<<<<<<< HEAD
 --- !u!95 &-9120696898984565802
 Animator:
   serializedVersion: 5
@@ -201,3 +206,5 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+=======
+>>>>>>> 1b100a6698335f48e1b3103c10c3f7a664aa4a79
