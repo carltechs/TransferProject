@@ -1,15 +1,15 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
+// using UnityEditor;   ← REMOVED, not needed now
+
 public class Turret : MonoBehaviour
 {
     [Header("Attributes")]
     [SerializeField] private float targetingRange = 5f;
     [SerializeField] private float rotationSpeed = 200f;
     [SerializeField] private float bulletsPerSecond = 1f;
-   
- 
+
     [Header("References")]
     [SerializeField] private Transform turretRotationPoint;
     [SerializeField] private LayerMask enemyMask;
@@ -47,7 +47,6 @@ public class Turret : MonoBehaviour
 
     private void FindTarget()
     {
-
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, targetingRange, enemyMask);
 
         if (hits.Length > 0)
@@ -68,11 +67,11 @@ public class Turret : MonoBehaviour
         turretRotationPoint.rotation = Quaternion.RotateTowards(turretRotationPoint.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 
+    // ── Now uses Gizmos instead of Handles ──
     private void OnDrawGizmosSelected()
     {
-        Handles.color = Color.cyan;
-        Handles.DrawWireDisc(transform.position, transform.forward, targetingRange);
-
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, targetingRange);
     }
 
     private void Shoot()
@@ -81,5 +80,4 @@ public class Turret : MonoBehaviour
         Bullet bulletScript = bulletObj.GetComponent<Bullet>();
         bulletScript.SetTarget(target);
     }
-
 }

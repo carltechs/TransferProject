@@ -1,16 +1,22 @@
 using UnityEngine;
+using UnityEngine.UI;  // Important for Button
 
 public class InputManager : MonoBehaviour
 {
     private InteractionDetector interactionDetector;
+    public Button interactButton;  // This creates the field
 
     void Start()
     {
         interactionDetector = GetComponent<InteractionDetector>();
 
-        if (interactionDetector == null)
+        if (interactButton != null)
         {
-            Debug.LogError("InteractionDetector not found on " + gameObject.name);
+            interactButton.onClick.AddListener(() => {
+                if (interactionDetector != null)
+                    interactionDetector.TryInteract();
+            });
+            Debug.Log("Button connected!");
         }
     }
 
@@ -19,9 +25,7 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (interactionDetector != null)
-            {
                 interactionDetector.TryInteract();
-            }
         }
     }
 }
