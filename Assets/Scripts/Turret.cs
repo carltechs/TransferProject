@@ -1,14 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-// using UnityEditor;   ← REMOVED, not needed now
+﻿using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
-    [Header("Attributes")]
+    [Header("Base Stats")]
     [SerializeField] private float targetingRange = 5f;
-    [SerializeField] private float rotationSpeed = 200f;
     [SerializeField] private float bulletsPerSecond = 1f;
+    [SerializeField] private int bulletDamage = 1;
+
+    [Header("Upgrade (auto from SkillTreeManager)")]
+    private float damageMultiplier = 1f;
 
     [Header("References")]
     [SerializeField] private Transform turretRotationPoint;
@@ -19,7 +19,13 @@ public class Turret : MonoBehaviour
     private Transform target;
     private float timeUntilFire;
 
-    private void Update()
+    void Start()
+    {
+        if (SkillTreeManager.Instance != null)
+            damageMultiplier = SkillTreeManager.Instance.totalDamageMultiplier;
+    }
+
+    void Update()
     {
         if (target == null)
         {
@@ -36,7 +42,6 @@ public class Turret : MonoBehaviour
         else
         {
             timeUntilFire += Time.deltaTime;
-
             if (timeUntilFire >= 1f / bulletsPerSecond)
             {
                 Shoot();
@@ -45,39 +50,33 @@ public class Turret : MonoBehaviour
         }
     }
 
-    private void FindTarget()
+    void FindTarget()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, targetingRange, enemyMask);
-
-        if (hits.Length > 0)
-        {
-            target = hits[0].transform;
-        }
+        if (hits.Length > 0) target = hits[0].transform;
     }
 
-    private bool CheckTargetIsInRange()
-    {
-        return Vector2.Distance(target.position, transform.position) <= targetingRange;
-    }
+    bool CheckTargetIsInRange() =>
+        Vector2.Distance(target.position, transform.position) <= targetingRange;
 
-    private void RotateTowardsTarget()
+    void RotateTowardsTarget()
     {
         float angle = Mathf.Atan2(target.position.y - transform.position.y, target.position.x - transform.position.x) * Mathf.Rad2Deg - 90f;
-        Quaternion targetRotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-        turretRotationPoint.rotation = Quaternion.RotateTowards(turretRotationPoint.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        turretRotationPoint.rotation = Quaternion.RotateTowards(turretRotationPoint.rotation, targetRotation, 200f * Time.deltaTime);
     }
 
-    // ── Now uses Gizmos instead of Handles ──
-    private void OnDrawGizmosSelected()
+    void Shoot()
+    {
+        GameObject bulletObj = Instantiate(bulletPrefab, firingPoint.position, Quaternion.identity);
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.SetTarget(target);
+        bullet.damageMultiplier = damageMultiplier;
+    }
+
+    void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, targetingRange);
-    }
-
-    private void Shoot()
-    {
-        GameObject bulletObj = Instantiate(bulletPrefab, firingPoint.position, Quaternion.identity);
-        Bullet bulletScript = bulletObj.GetComponent<Bullet>();
-        bulletScript.SetTarget(target);
     }
 }

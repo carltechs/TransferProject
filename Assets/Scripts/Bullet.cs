@@ -1,34 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Rigidbody2D rb;
-
-    [Header("Attributes")]
-    [SerializeField] private float bulletSpeed = 5f;
-    [SerializeField] private int bulletDamage = 1;
-
+    [SerializeField] private int baseDamage = 1;
+    public float damageMultiplier = 1f;
     private Transform target;
 
-    public void SetTarget(Transform _target)
+    public void SetTarget(Transform t) => target = t;
+
+    void OnCollisionEnter2D(Collision2D col)
     {
-        target = _target;
-    }
-
-    private void FixedUpdate()
-    {
-        if (!target) return;
-
-        Vector2 direction = (target.position - transform.position).normalized;
-        rb.velocity = direction * bulletSpeed;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    { if (collision != null)
-        collision.gameObject.GetComponent<Health>().TakeDamage(bulletDamage);
+        int finalDamage = Mathf.RoundToInt(baseDamage * damageMultiplier);
+        col.gameObject.GetComponent<Health>()?.TakeDamage(finalDamage);
         Destroy(gameObject);
     }
 }
